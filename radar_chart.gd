@@ -1,10 +1,11 @@
 extends Control
 
-@export var stats : int = 10 ## the amount of different lines/stats that will be tracked
+@export var stats : int = 6 ## the amount of different lines/stats that will be tracked
 @export var names : Array[String]
 @export var max_value : int = 100
 @export var values : Array[int]
 @export var radius : int = 200 ## the radius of the chart in pixels.
+@export var label_offset : int = 15
 
 @export var border_thickness := 5.0
 @export var perimeter_color := Color.DARK_GRAY
@@ -22,7 +23,7 @@ var perimeter_positions : Array
 var value_positions : Array
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	label_positions = arrange_in_circle(stats, radius + 50, center - Vector2(15,0))
+	label_positions = arrange_in_circle(stats, radius + 50, center - Vector2(label_offset,0))
 	perimeter_positions = arrange_in_circle(stats, radius, center)
 	value_positions = arrange_in_circle(stats, 5, center)
 	names.resize(stats)
@@ -60,22 +61,22 @@ func _draw() -> void:
 	
 	##Points
 	for i in range(stats):
-		draw_circle(value_positions[i % stats], 5,  value_point_color, true, 1.0) #points
-		draw_circle(perimeter_positions[i % stats], 5, perimeter_point_color, true, 1.0) 
+		draw_circle(value_positions[i % stats], 5,  value_point_color, true) #points
+		draw_circle(perimeter_positions[i % stats], 5, perimeter_point_color, true) 
 	
-	draw_circle(center, 6,  value_point_color, true, 1.0)
+	draw_circle(center, 6,  value_point_color, true)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	pass
 
 #a function to get an array of n positions arranged evenly in a circle, with a given radius, around a specific center point, and with an optional angle offset
-func arrange_in_circle(n: int, r: float, center=Vector2.ZERO, start_offset=0.0) -> Array:
+func arrange_in_circle(n: int, r: float, circle_center=Vector2.ZERO, start_offset=0.0) -> Array:
 	var output = []
 	var offset = 2.0 * PI / abs(n) # could verify that n is non-zero and
 	for i in range(n):
 		var pos = Vector2(r, 0).rotated(i * offset + start_offset)
-		output.push_front(pos + center)
+		output.push_front(pos + circle_center)
 	return output
 
 func interpolate_between_points(A: Vector2, B: Vector2, percent: float) -> Vector2:
